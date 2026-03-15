@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "event": {
+      "title": "Event",
+      "description": "A college club event",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Event title" },
+        "club": { "type": "string", "description": "Club name" },
+        "clubId": { "type": "string", "description": "Reference to club ID" },
+        "description": { "type": "string", "description": "Full event description" },
+        "date": { "type": "string", "format": "date", "description": "Event date (YYYY-MM-DD)" },
+        "time": { "type": "string", "description": "Event time" },
+        "venue": { "type": "string", "description": "Event venue" },
+        "posterURL": { "type": "string", "description": "URL to event poster image" },
+        "registrationLink": { "type": "string", "description": "External registration link" },
+        "createdBy": { "type": "string", "description": "UID of the club organizer who created this" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["title", "club", "date", "time", "venue", "createdBy"]
+    },
+    "club": {
+      "title": "Club",
+      "description": "A college club",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Club name" },
+        "logo": { "type": "string", "description": "URL to club logo" },
+        "description": { "type": "string", "description": "Club description" },
+        "ownerUid": { "type": "string", "description": "UID of the club owner" }
+      },
+      "required": ["name"]
+    }
+  },
+  "firestore": {
+    "events": {
+      "schema": "event",
+      "description": "Collection of all club events"
+    },
+    "clubs": {
+      "schema": "club",
+      "description": "Collection of college clubs"
+    }
+  }
+}
