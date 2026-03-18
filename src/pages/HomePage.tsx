@@ -56,6 +56,13 @@ export default function HomePage() {
 
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
+      // Secondary sort by createdAt for events on the same date
+      eventsData.sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        const aTime = a.createdAt?.toMillis?.() ?? 0;
+        const bTime = b.createdAt?.toMillis?.() ?? 0;
+        return aTime - bTime;
+      });
       setEvents(eventsData);
       setLoading(false);
     });
@@ -79,7 +86,7 @@ export default function HomePage() {
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">Discover Campus Life</h1>
           <p className="text-emerald-100 text-lg mb-8">All GEU college club events in one place. Never miss a hackathon, workshop, or competition again.</p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative grow">
+            <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-400" />
               <input 
                 type="text" 
