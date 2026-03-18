@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, getDocs, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../firebase';
+import { db } from '../firebase';
+import { uploadImage } from '../utils/uploadImage';
 import { Event, Club } from '../types';
 import { Plus, Edit2, Trash2, X, Image as ImageIcon, Check, AlertCircle, ShieldOff } from 'lucide-react';
 
@@ -132,9 +132,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
 
       // Upload poster if selected
       if (posterFile) {
-        const storageRef = ref(storage, `posters/${user.uid}/${Date.now()}_${posterFile.name}`);
-        const uploadResult = await uploadBytes(storageRef, posterFile);
-        finalPosterURL = await getDownloadURL(uploadResult.ref);
+        finalPosterURL = await uploadImage(posterFile);
       }
 
       const eventData = {

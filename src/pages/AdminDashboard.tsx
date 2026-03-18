@@ -4,8 +4,8 @@ import {
   collection, query, onSnapshot, addDoc, deleteDoc,
   doc, serverTimestamp, orderBy, setDoc
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../firebase';
+import { db } from '../firebase';
+import { uploadImage } from '../utils/uploadImage';
 import { Event, Club, AllowedOrganiser } from '../types';
 import {
   Plus, Trash2, X, Image as ImageIcon, Check,
@@ -108,9 +108,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     try {
       let finalPosterURL = eventForm.posterURL;
       if (posterFile) {
-        const storageRef = ref(storage, `posters/admin/${Date.now()}_${posterFile.name}`);
-        const result = await uploadBytes(storageRef, posterFile);
-        finalPosterURL = await getDownloadURL(result.ref);
+        finalPosterURL = await uploadImage(posterFile);
       }
 
       const selectedClub = clubs.find(c => c.id === eventForm.clubId);
@@ -154,9 +152,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     try {
       let logoURL = clubForm.logo;
       if (clubLogoFile) {
-        const storageRef = ref(storage, `logos/${Date.now()}_${clubLogoFile.name}`);
-        const result = await uploadBytes(storageRef, clubLogoFile);
-        logoURL = await getDownloadURL(result.ref);
+        logoURL = await uploadImage(clubLogoFile);
       }
 
       await addDoc(collection(db, 'clubs'), {
