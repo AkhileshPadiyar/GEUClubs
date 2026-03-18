@@ -90,7 +90,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-stone-50 text-stone-900 font-sans">
+      <div className="min-h-screen bg-stone-50 text-stone-900 font-sans overflow-x-hidden">
         <Navbar user={user} />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Routes>

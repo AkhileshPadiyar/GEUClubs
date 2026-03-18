@@ -81,10 +81,10 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="bg-emerald-900 rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden">
+      <div className="bg-emerald-900 rounded-3xl p-5 sm:p-8 lg:p-12 text-white relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">Discover Campus Life</h1>
-          <p className="text-emerald-100 text-lg mb-8">All GEU college club events in one place. Never miss a hackathon, workshop, or competition again.</p>
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-3">Discover Campus Life</h1>
+          <p className="text-emerald-100 text-sm sm:text-lg mb-5 sm:mb-8">All GEU college club events in one place. Never miss a hackathon, workshop, or competition again.</p>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-400" />
@@ -112,14 +112,14 @@ export default function HomePage() {
           </div>
         </div>
         {/* Abstract background elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 translate-y-1/2 w-64 h-64 bg-emerald-400/10 rounded-full blur-2xl"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-64 sm:w-96 h-64 sm:h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 right-0 translate-y-1/2 w-40 sm:w-64 h-40 sm:h-64 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none"></div>
       </div>
 
       {/* Events Grid */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-stone-900 flex items-center">
+          <h2 className="text-lg sm:text-2xl font-bold text-stone-900 flex items-center">
             <CalendarIcon className="h-6 w-6 mr-2 text-emerald-600" />
             Upcoming Events
           </h2>
