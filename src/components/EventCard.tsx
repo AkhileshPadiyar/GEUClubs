@@ -9,7 +9,8 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
-  const eventDate = new Date(event.date);
+  // Append T00:00:00 to force local time parsing, avoids UTC shift showing wrong date in India (UTC+5:30)
+  const eventDate = new Date(event.date + 'T00:00:00');
 
   return (
     <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow group">

@@ -5,7 +5,15 @@ import { db } from '../firebase';
 import { Event, Club } from '../types';
 import EventCard from '../components/EventCard';
 import { Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
-import { handleFirestoreError, OperationType } from '../utils/firestore-errors';
+
+// Returns today's date as YYYY-MM-DD in local time (avoids UTC shift bug)
+function getTodayString(): string {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 export default function HomePage() {
   const { clubId } = useParams();
@@ -16,28 +24,47 @@ export default function HomePage() {
   const [selectedClub, setSelectedClub] = useState(clubId || 'all');
 
   useEffect(() => {
-    // Fetch Clubs for filter
+    // Sync filter if URL club param changes
+    if (clubId) setSelectedClub(clubId);
+  }, [clubId]);
+
+  useEffect(() => {
+    // Fetch clubs for filter dropdown
     const clubsQuery = query(collection(db, 'clubs'), orderBy('name'));
     const unsubscribeClubs = onSnapshot(clubsQuery, (snapshot) => {
       const clubsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Club));
       setClubs(clubsData);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'clubs');
     });
 
-    // Fetch Events
-    let eventsQuery = query(collection(db, 'events'), orderBy('date', 'asc'));
-    
+    const today = getTodayString();
+
+    // Fetch only upcoming events (today or later), sorted by date
+    let eventsQuery = query(
+      collection(db, 'events'),
+      where('date', '>=', today),
+      orderBy('date', 'asc')
+    );
+
     if (selectedClub !== 'all') {
-      eventsQuery = query(collection(db, 'events'), where('clubId', '==', selectedClub), orderBy('date', 'asc'));
+      eventsQuery = query(
+        collection(db, 'events'),
+        where('clubId', '==', selectedClub),
+        where('date', '>=', today),
+        orderBy('date', 'asc')
+      );
     }
 
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
+      // Secondary sort by createdAt for events on the same date
+      eventsData.sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        const aTime = a.createdAt?.toMillis?.() ?? 0;
+        const bTime = b.createdAt?.toMillis?.() ?? 0;
+        return aTime - bTime;
+      });
       setEvents(eventsData);
       setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'events');
     });
 
     return () => {
@@ -46,7 +73,7 @@ export default function HomePage() {
     };
   }, [selectedClub]);
 
-  const filteredEvents = events.filter(event => 
+  const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.club.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -116,8 +143,12 @@ export default function HomePage() {
             <div className="bg-stone-50 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="h-8 w-8 text-stone-300" />
             </div>
-            <h3 className="text-lg font-semibold text-stone-900">No events found</h3>
-            <p className="text-stone-500">Try adjusting your search or filter to find what you're looking for.</p>
+            <h3 className="text-lg font-semibold text-stone-900">No upcoming events found</h3>
+            <p className="text-stone-500">
+              {searchTerm || selectedClub !== 'all'
+                ? 'Try adjusting your search or filter.'
+                : 'No events are scheduled yet. Check back soon!'}
+            </p>
           </div>
         )}
       </div>

@@ -2,7 +2,7 @@ export interface Event {
   id: string;
   title: string;
   club: string;
-  clubId?: string;
+  clubId: string;
   description?: string;
   date: string; // YYYY-MM-DD
   time: string;
@@ -18,5 +18,11 @@ export interface Club {
   name: string;
   logo?: string;
   description?: string;
-  ownerUid?: string;
+}
+
+export interface AllowedOrganiser {
+  email: string;
+  clubId: string;
+  clubName: string;
+  addedAt?: any;
 }

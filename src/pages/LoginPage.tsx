@@ -11,9 +11,13 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // No whitelist check here — anyone can log in.
+  // The Dashboard itself checks if the user is an authorised organiser.
+
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      setError('');
       await signInWithPopup(auth, googleProvider);
       navigate('/dashboard');
     } catch (err: any) {
@@ -50,7 +54,7 @@ export default function LoginPage() {
 
         {error && (
           <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl mb-6 flex items-start">
-            <AlertCircle className="h-5 w-5 mr-3 mt-0.5 shrink-0" />
+            <AlertCircle className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
             <span className="text-sm">{error}</span>
           </div>
         )}
@@ -60,8 +64,8 @@ export default function LoginPage() {
             <label className="block text-sm font-semibold text-stone-700 mb-1.5">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                 placeholder="club@geu.ac.in"
@@ -74,8 +78,8 @@ export default function LoginPage() {
             <label className="block text-sm font-semibold text-stone-700 mb-1.5">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 required
                 className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                 placeholder="••••••••"
@@ -84,7 +88,7 @@ export default function LoginPage() {
               />
             </div>
           </div>
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all disabled:opacity-50"
@@ -102,7 +106,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={handleGoogleLogin}
           disabled={loading}
           className="w-full bg-white border border-stone-200 text-stone-700 py-3 rounded-xl font-bold hover:bg-stone-50 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
@@ -112,7 +116,7 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-stone-400 text-xs mt-8">
-          Only authorized club organizers can post events. Contact the student council for access.
+          Only authorised club organisers can post events. Contact the student council for access.
         </p>
       </div>
     </div>

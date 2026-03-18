@@ -4,7 +4,6 @@ import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Club } from '../types';
 import { Users, ChevronRight } from 'lucide-react';
-import { handleFirestoreError, OperationType } from '../utils/firestore-errors';
 
 export default function ClubsPage() {
   const [clubs, setClubs] = useState<Club[]>([]);
@@ -16,8 +15,6 @@ export default function ClubsPage() {
       const clubsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Club));
       setClubs(clubsData);
       setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'clubs');
     });
     return () => unsubscribe();
   }, []);
@@ -34,6 +31,14 @@ export default function ClubsPage() {
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-2xl h-40 animate-pulse border border-stone-100"></div>
           ))}
+        </div>
+      ) : clubs.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-3xl border border-stone-200">
+          <div className="bg-stone-50 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users className="h-8 w-8 text-stone-300" />
+          </div>
+          <h3 className="text-lg font-semibold text-stone-900">No clubs registered yet</h3>
+          <p className="text-stone-500 mt-1">Clubs will appear here once they're added to the platform.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
