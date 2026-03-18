@@ -14,7 +14,7 @@ import ClubsPage from './pages/ClubsPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-import AdminDashboard from './pages/Admindashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Components
 import Navbar from './components/Navbar';
