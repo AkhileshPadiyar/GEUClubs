@@ -330,65 +330,88 @@ export default function DashboardPage({ user }: DashboardPageProps) {
         </div>
         
         {events.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-stone-50 text-stone-400 text-xs font-bold uppercase tracking-wider">
-                  <th className="px-6 py-4">Event Details</th>
-                  <th className="px-6 py-4">Date & Time</th>
-                  <th className="px-6 py-4">Venue</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {events.map(event => (
-                  <tr key={event.id} className="hover:bg-stone-50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="h-12 w-12 rounded-lg bg-stone-100 overflow-hidden flex-shrink-0 border border-stone-200">
-                          <img 
-                            src={event.posterURL || `https://picsum.photos/seed/${event.id}/100/100`} 
-                            alt="" 
-                            className="h-full w-full object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                        <div>
-                          <p className="font-bold text-stone-900">{event.title}</p>
-                          <p className="text-xs text-emerald-600 font-medium">{event.club}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-stone-600">{event.date}</p>
-                      <p className="text-xs text-stone-400">{event.time}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-stone-600 line-clamp-1">{event.venue}</p>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button 
-                          onClick={() => handleOpenModal(event)}
-                          className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-                          title="Edit"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(event.id)}
-                          className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Mobile card layout */}
+            <div className="sm:hidden divide-y divide-stone-100">
+              {events.map(event => (
+                <div key={event.id} className="p-4 flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-lg bg-stone-100 overflow-hidden shrink-0 border border-stone-200">
+                    <img
+                      src={event.posterURL || `https://picsum.photos/seed/${event.id}/100/100`}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <p className="font-bold text-stone-900 text-sm truncate">{event.title}</p>
+                    <p className="text-xs text-emerald-600 font-medium">{event.club}</p>
+                    <p className="text-xs text-stone-400 mt-0.5">{event.date} · {event.venue}</p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => handleOpenModal(event)} className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => handleDelete(event.id)} className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table layout */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-stone-50 text-stone-400 text-xs font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4">Event Details</th>
+                    <th className="px-6 py-4">Date & Time</th>
+                    <th className="px-6 py-4">Venue</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {events.map(event => (
+                    <tr key={event.id} className="hover:bg-stone-50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="h-12 w-12 rounded-lg bg-stone-100 overflow-hidden flex-shrink-0 border border-stone-200">
+                            <img
+                              src={event.posterURL || `https://picsum.photos/seed/${event.id}/100/100`}
+                              alt=""
+                              className="h-full w-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-bold text-stone-900">{event.title}</p>
+                            <p className="text-xs text-emerald-600 font-medium">{event.club}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-stone-600">{event.date}</p>
+                        <p className="text-xs text-stone-400">{event.time}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-stone-600 line-clamp-1">{event.venue}</p>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <button onClick={() => handleOpenModal(event)} className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit">
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => handleDelete(event.id)} className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className="p-12 text-center">
             <p className="text-stone-500 mb-4">You haven't posted any events yet.</p>

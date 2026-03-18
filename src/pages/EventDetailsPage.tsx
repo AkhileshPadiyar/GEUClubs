@@ -98,7 +98,7 @@ export default function EventDetailsPage() {
       </button>
 
       <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm">
-        <div className="aspect-[21/9] relative">
+        <div className="aspect-video sm:aspect-[21/9] relative">
           <img
             src={event.posterURL || `https://picsum.photos/seed/${event.id}/1200/600`}
             alt={event.title}
@@ -110,11 +110,11 @@ export default function EventDetailsPage() {
             <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block">
               {event.club}
             </span>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">{event.title}</h1>
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">{event.title}</h1>
           </div>
         </div>
 
-        <div className="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="p-4 sm:p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
           <div className="lg:col-span-2 space-y-8">
             <div>
               <h2 className="text-xl font-bold text-stone-900 mb-4">About the Event</h2>
