@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, getDocs, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { isAdmin } from '../config/admins';
 import { uploadImage } from '../utils/uploadImage';
 import { Event, Club } from '../types';
 import { Plus, Edit2, Trash2, X, Image as ImageIcon, Check, AlertCircle, ShieldOff } from 'lucide-react';
@@ -305,7 +306,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
           <p className="text-stone-500">Welcome back, {user.displayName || 'Organizer'}</p>
         </div>
         <div className="flex items-center space-x-3">
-          {user.email === 'akhileshpadiyar74@gmail.com' && (
+          {isAdmin(user.email) && (
             <button 
               onClick={handleSeedData}
               className="text-stone-500 hover:text-emerald-600 text-sm font-medium px-4 py-2 rounded-xl border border-stone-200 hover:border-emerald-200 transition-all"
@@ -332,7 +333,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
         {events.length > 0 ? (
           <>
             {/* Mobile card layout */}
-            <div className="sm:hidden divide-y divide-stone-100">
+            <div className="md:hidden divide-y divide-stone-100">
               {events.map(event => (
                 <div key={event.id} className="p-4 flex items-center gap-3">
                   <div className="h-12 w-12 rounded-lg bg-stone-100 overflow-hidden shrink-0 border border-stone-200">
@@ -360,7 +361,7 @@ export default function DashboardPage({ user }: DashboardPageProps) {
               ))}
             </div>
             {/* Desktop table layout */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-stone-50 text-stone-400 text-xs font-bold uppercase tracking-wider">

@@ -15,9 +15,15 @@ export interface Event {
 
 export interface Club {
   id: string;
-  name: string;
-  logo?: string;
-  description?: string;
+  name: string;           // locked — only admin can change
+  logo?: string;          // profile picture
+  bannerImage?: string;   // wide header image for club detail page
+  description?: string;   // about the club
+  instagram?: string;     // @handle or full URL
+  facebook?: string;      // page URL
+  twitter?: string;       // @handle or full URL (Twitter / X)
+  website?: string;       // official website URL
+  email?: string;         // contact email
 }
 
 export interface AllowedOrganiser {

@@ -2,75 +2,78 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ================================================================
-    // Helper Functions
-    // ================================================================
-
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Checks if the logged-in user's email exists as a document ID
-    // in the allowedOrganizers collection (email is used as the doc ID)
+    function isAdmin() {
+      return isAuthenticated() &&
+        request.auth.token.email_verified == true &&
+        (request.auth.token.email == "akhileshpadiyar74@gmail.com" ||
+         request.auth.token.email == "hanubhakta0101@gmail.com" ||
+         request.auth.token.email == "work.luckyjaiswal@gmail.com");
+    }
+
+    // Organiser exists in allowedOrganizers collection
     function isAuthorisedOrganiser() {
       return isAuthenticated() &&
         request.auth.token.email != null &&
         exists(/databases/$(database)/documents/allowedOrganizers/$(request.auth.token.email));
     }
 
-    // Checks if the logged-in user is the admin (your email)
-    function isAdmin() {
-      return isAuthenticated() &&
-        request.auth.token.email == "akhileshpadiyar74@gmail.com" &&
-        request.auth.token.email_verified == true;
+    // The clubId on the event matches the clubId assigned to this organiser
+    // This is the key rule that prevents cross-club posting
+    function isPostingForAssignedClub(clubId) {
+      return get(/databases/$(database)/documents/allowedOrganizers/$(request.auth.token.email)).data.clubId == clubId;
     }
 
-    // Validates event fields before writing
     function isValidEvent(data) {
       return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
              data.club is string && data.club.size() > 0 &&
+             data.clubId is string && data.clubId.size() > 0 &&
              data.date is string && data.date.matches("^\\d{4}-\\d{2}-\\d{2}$") &&
-             data.time is string &&
-             data.venue is string &&
-             data.createdBy == request.auth.uid &&
-             (!('description' in data) || (data.description is string && data.description.size() < 5000)) &&
-             (!('posterURL' in data) || (data.posterURL is string && data.posterURL.size() < 1000)) &&
-             (!('registrationLink' in data) || (data.registrationLink is string && data.registrationLink.size() < 1000));
+             data.time is string && data.time.size() > 0 &&
+             data.venue is string && data.venue.size() > 0 &&
+             data.createdBy == request.auth.uid;
     }
 
-    // ================================================================
-    // events collection
-    // Anyone can read. Only authorised organisers can write,
-    // and only to events they created themselves.
-    // ================================================================
+    // ── events ────────────────────────────────────────────────────
     match /events/{eventId} {
       allow read: if true;
-      allow create: if isAuthorisedOrganiser() && isValidEvent(request.resource.data);
-      allow update: if isAuthorisedOrganiser() && isValidEvent(request.resource.data) &&
-                       resource.data.createdBy == request.auth.uid;
-      allow delete: if isAuthenticated() &&
-                       (resource.data.createdBy == request.auth.uid || isAdmin());
+
+      // Admin can post for any club
+      // Organiser can only post for their assigned club
+      allow create: if isAdmin() ||
+        (isAuthorisedOrganiser() &&
+         isValidEvent(request.resource.data) &&
+         isPostingForAssignedClub(request.resource.data.clubId));
+
+      allow update: if isAdmin() ||
+        (isAuthorisedOrganiser() &&
+         isValidEvent(request.resource.data) &&
+         resource.data.createdBy == request.auth.uid &&
+         isPostingForAssignedClub(request.resource.data.clubId));
+
+      allow delete: if isAdmin() ||
+        (isAuthenticated() && resource.data.createdBy == request.auth.uid);
     }
 
-    // ================================================================
-    // clubs collection
-    // Anyone can read. Only authorised organisers can create a club.
-    // Only the owner of a club (or admin) can update it.
-    // ================================================================
+    // ── clubs ─────────────────────────────────────────────────────
     match /clubs/{clubId} {
       allow read: if true;
-      allow create: if isAuthorisedOrganiser();
-      allow update: if isAuthenticated() &&
-                       (resource.data.ownerUid == request.auth.uid || isAdmin());
+      allow create: if isAdmin();
       allow delete: if isAdmin();
+
+      // Admin can update everything including the name
+      // Organiser assigned to this club can update everything EXCEPT the name
+      allow update: if isAdmin() ||
+        (isAuthorisedOrganiser() &&
+         isPostingForAssignedClub(clubId) &&
+         // Prevent organiser from changing the club name
+         request.resource.data.name == resource.data.name);
     }
 
-    // ================================================================
-    // allowedOrganizers collection
-    // Authenticated users can read (so the frontend check works).
-    // Only the admin can write (add/remove organizers).
-    // Nobody else can modify this list from the client.
-    // ================================================================
+    // ── allowedOrganizers ─────────────────────────────────────────
     match /allowedOrganizers/{email} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
