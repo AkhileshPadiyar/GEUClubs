@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Event } from '../types';
-import { Calendar, MapPin, Clock, ArrowLeft, ExternalLink, Share2, Check } from 'lucide-react';
+import { Calendar, MapPin, Clock, ArrowLeft, ExternalLink, Share2, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function EventDetailsPage() {
@@ -12,6 +12,16 @@ export default function EventDetailsPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [shareCopied, setShareCopied] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false);
+    };
+    if (lightboxOpen) window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [lightboxOpen]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -98,15 +108,20 @@ export default function EventDetailsPage() {
       </button>
 
       <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm">
-        <div className="aspect-video sm:aspect-[21/9] relative">
+        <div className="aspect-video sm:aspect-[21/9] relative group">
           <img
             src={event.posterURL || `https://picsum.photos/seed/${event.id}/1200/600`}
             alt={event.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover cursor-zoom-in"
             referrerPolicy="no-referrer"
+            onClick={() => setLightboxOpen(true)}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div className="absolute bottom-6 left-6 right-6">
+          {/* Tap to enlarge hint — visible on mobile, fades on hover on desktop */}
+          <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full opacity-80 group-hover:opacity-0 transition-opacity pointer-events-none">
+            Tap to enlarge
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+          <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
             <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block">
               {event.club}
             </span>
@@ -114,8 +129,36 @@ export default function EventDetailsPage() {
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
-          <div className="lg:col-span-2 space-y-8">
+        {/* Lightbox */}
+        {lightboxOpen && (
+          <div
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setLightboxOpen(false)}
+          >
+            {/* Close button */}
+            <button
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition-colors z-10"
+              onClick={() => setLightboxOpen(false)}
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Image — stop click propagation so clicking the image doesn't close */}
+            <img
+              src={event.posterURL || `https://picsum.photos/seed/${event.id}/1200/600`}
+              alt={event.title}
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+              referrerPolicy="no-referrer"
+              onClick={e => e.stopPropagation()}
+            />
+
+            <p className="absolute bottom-4 text-white/40 text-xs">Tap anywhere outside to close</p>
+          </div>
+        )}
+
+        <div className="p-4 sm:p-6 lg:p-10 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+          <div className="md:col-span-2 space-y-8">
             <div>
               <h2 className="text-xl font-bold text-stone-900 mb-4">About the Event</h2>
               <div className="text-stone-600 leading-relaxed whitespace-pre-wrap">

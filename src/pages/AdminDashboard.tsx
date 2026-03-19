@@ -291,7 +291,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           ) : (
             <>
               {/* Mobile card layout */}
-              <div className="sm:hidden divide-y divide-stone-100">
+              <div className="md:hidden divide-y divide-stone-100">
                 {events.map(event => (
                   <div key={event.id} className="p-4 flex items-center gap-3">
                     <div className="h-12 w-12 rounded-lg bg-stone-100 overflow-hidden shrink-0 border border-stone-200">
@@ -314,7 +314,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                 ))}
               </div>
               {/* Desktop table layout */}
-              <div className="hidden sm:block overflow-x-auto">
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-stone-50 text-stone-400 text-xs font-bold uppercase tracking-wider">
@@ -377,7 +377,11 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                     </div>
                     <div>
                       <p className="font-semibold text-stone-900">{club.name}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">{club.description || 'No description'}</p>
+                      <p className="text-xs text-stone-400 mt-0.5 truncate max-w-[200px]">
+                        {club.description
+                          ? club.description.split(' ').slice(0, 8).join(' ') + (club.description.split(' ').length > 8 ? '...' : '')
+                          : 'No description'}
+                      </p>
                       <p className="text-xs text-stone-300 font-mono mt-0.5">ID: {club.id}</p>
                     </div>
                   </div>

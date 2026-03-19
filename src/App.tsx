@@ -15,6 +15,8 @@ import EventDetailsPage from './pages/EventDetailsPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminDashboard from './pages/AdminDashboard';
+import ClubDetailPage from './pages/ClubDetailPage';
+import { isAdmin } from './config/admins';
 
 // Components
 import Navbar from './components/Navbar';
@@ -96,12 +98,12 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/clubs" element={<ClubsPage />} />
-            <Route path="/clubs/:clubId" element={<HomePage />} />
+            <Route path="/clubs/:clubId" element={<ClubDetailPage user={user} />} />
             <Route path="/events/:eventId" element={<EventDetailsPage />} />
             <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
             <Route path="/dashboard" element={
                 user
-                  ? user.email === 'akhileshpadiyar74@gmail.com'
+                  ? isAdmin(user.email)
                     ? <AdminDashboard user={user} />
                     : <DashboardPage user={user} />
                   : <Navigate to="/login" />

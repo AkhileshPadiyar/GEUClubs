@@ -27,7 +27,7 @@ export default function ClubsPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-white rounded-2xl h-40 animate-pulse border border-stone-100"></div>
           ))}
@@ -41,7 +41,7 @@ export default function ClubsPage() {
           <p className="text-stone-500 mt-1">Clubs will appear here once they're added to the platform.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {clubs.map(club => (
             <Link 
               key={club.id} 
@@ -49,18 +49,18 @@ export default function ClubsPage() {
               className="bg-white p-6 rounded-2xl border border-stone-200 hover:border-emerald-500 hover:shadow-md transition-all group"
             >
               <div className="flex items-center space-x-4">
-                <div className="h-16 w-16 rounded-xl bg-stone-50 flex items-center justify-center border border-stone-100 group-hover:bg-emerald-50 transition-colors">
+                <div className="h-16 w-16 rounded-xl bg-stone-50 flex items-center justify-center border border-stone-100 group-hover:bg-emerald-50 transition-colors shrink-0">
                   {club.logo ? (
                     <img src={club.logo} alt={club.name} className="h-12 w-12 object-contain" referrerPolicy="no-referrer" />
                   ) : (
                     <Users className="h-8 w-8 text-stone-300 group-hover:text-emerald-500 transition-colors" />
                   )}
                 </div>
-                <div className="flex-grow">
-                  <h3 className="font-bold text-stone-900 group-hover:text-emerald-600 transition-colors">{club.name}</h3>
+                <div className="flex-grow min-w-0">
+                  <h3 className="font-bold text-stone-900 group-hover:text-emerald-600 transition-colors truncate">{club.name}</h3>
                   <p className="text-sm text-stone-500 line-clamp-1">{club.description || 'Student-led club at GEU'}</p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-stone-300 group-hover:text-emerald-500 transition-colors" />
+                <ChevronRight className="h-5 w-5 text-stone-300 group-hover:text-emerald-500 transition-colors shrink-0" />
               </div>
             </Link>
           ))}

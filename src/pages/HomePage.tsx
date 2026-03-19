@@ -83,7 +83,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <div className="bg-emerald-900 rounded-3xl p-5 sm:p-8 lg:p-12 text-white relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-3">Discover Campus Life</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3">Discover Campus Life</h1>
           <p className="text-emerald-100 text-sm sm:text-lg mb-5 sm:mb-8">All GEU college club events in one place. Never miss a hackathon, workshop, or competition again.</p>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-grow">
@@ -127,13 +127,13 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white rounded-2xl h-80 animate-pulse border border-stone-100"></div>
             ))}
           </div>
         ) : filteredEvents.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {filteredEvents.map((event: Event) => (
               <EventCard key={event.id} event={event} />
             ))}
