@@ -8,6 +8,7 @@ export interface Event {
   time: string;
   venue: string;
   posterURL?: string;
+  gallery?: string[];     // additional posters/images, max 8
   registrationLink?: string;
   createdBy: string;
   createdAt?: any;
