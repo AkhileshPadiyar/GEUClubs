@@ -31,9 +31,12 @@ export default function DashboardPage({ user }: DashboardPageProps) {
     venue: '',
     description: '',
     registrationLink: '',
-    posterURL: ''
+    posterURL: '',
+    gallery: [] as string[]
   });
   const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]); // existing URLs when editing
 
   useEffect(() => {
     // Step 1 — Check if this user is an authorised organiser
@@ -97,8 +100,11 @@ export default function DashboardPage({ user }: DashboardPageProps) {
         venue: event.venue,
         description: event.description || '',
         registrationLink: event.registrationLink || '',
-        posterURL: event.posterURL || ''
+        posterURL: event.posterURL || '',
+        gallery: event.gallery || []
       });
+      setGalleryPreviews(event.gallery || []);
+      setGalleryFiles([]);
     } else {
       setEditingEvent(null);
       setFormData({
@@ -120,6 +126,8 @@ export default function DashboardPage({ user }: DashboardPageProps) {
     setIsModalOpen(false);
     setEditingEvent(null);
     setPosterFile(null);
+    setGalleryFiles([]);
+    setGalleryPreviews([]);
     setMessage({ type: '', text: '' });
   };
 
@@ -130,15 +138,22 @@ export default function DashboardPage({ user }: DashboardPageProps) {
 
     try {
       let finalPosterURL = formData.posterURL;
-
-      // Upload poster if selected
       if (posterFile) {
         finalPosterURL = await uploadImage(posterFile);
       }
 
+      // Upload new gallery files and combine with existing previews (kept URLs)
+      const newGalleryURLs: string[] = [];
+      for (const file of galleryFiles) {
+        const url = await uploadImage(file);
+        newGalleryURLs.push(url);
+      }
+      const finalGallery = [...galleryPreviews, ...newGalleryURLs].slice(0, 8);
+
       const eventData = {
         ...formData,
         posterURL: finalPosterURL,
+        gallery: finalGallery,
         createdBy: user.uid,
         updatedAt: serverTimestamp()
       };
@@ -592,7 +607,79 @@ export default function DashboardPage({ user }: DashboardPageProps) {
                     )}
                   </div>
                 </div>
-              </div>
+                </div>
+
+                {/* Gallery upload */}
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-bold text-stone-700 mb-2 text-stone-900">
+                    Additional Posters / Gallery
+                    <span className="text-stone-400 font-normal ml-1">({Math.min(8, galleryPreviews.length + galleryFiles.length)}/8 images)</span>
+                  </label>
+
+                  {/* Existing gallery previews (when editing) */}
+                  {galleryPreviews.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {galleryPreviews.map((url, i) => (
+                        <div key={i} className="relative h-20 w-14 rounded-lg overflow-hidden border border-stone-200 group/gp">
+                          <img src={url} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                          <button
+                            type="button"
+                            onClick={() => setGalleryPreviews(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover/gp:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* New files selected */}
+                  {galleryFiles.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {galleryFiles.map((file, i) => (
+                        <div key={i} className="relative h-20 w-14 rounded-lg overflow-hidden border border-emerald-200 group/gf">
+                          <img src={URL.createObjectURL(file)} alt="" className="h-full w-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setGalleryFiles(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover/gf:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Upload button — hidden when at max */}
+                  {(galleryPreviews.length + galleryFiles.length) < 8 && (
+                    <>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        id="gallery-upload"
+                        onChange={e => {
+                          const files = Array.from(e.target.files || []);
+                          const remaining = 8 - galleryPreviews.length - galleryFiles.length;
+                          setGalleryFiles(prev => [...prev, ...files.slice(0, remaining)]);
+                          e.target.value = '';
+                        }}
+                      />
+                      <label
+                        htmlFor="gallery-upload"
+                        className="flex items-center justify-center w-full border-2 border-dashed border-stone-200 rounded-xl py-4 px-4 cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition-all group"
+                      >
+                        <div className="text-center">
+                          <ImageIcon className="h-6 w-6 text-stone-300 group-hover:text-emerald-500 mx-auto mb-1" />
+                          <p className="text-sm text-stone-400">Click to add images <span className="text-stone-300">(select multiple)</span></p>
+                        </div>
+                      </label>
+                    </>
+                  )}
+                </div>
 
               <div className="pt-6 border-t border-stone-100 flex items-center justify-end space-x-4">
                 <button 

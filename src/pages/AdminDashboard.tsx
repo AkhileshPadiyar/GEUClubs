@@ -38,9 +38,11 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
   // Event form
   const [eventForm, setEventForm] = useState({
     title: '', clubId: '', club: '', date: '', time: '',
-    venue: '', description: '', registrationLink: '', posterURL: ''
+    venue: '', description: '', registrationLink: '', posterURL: '', gallery: [] as string[]
   });
   const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
   // Club form
   const [clubForm, setClubForm] = useState({
@@ -111,11 +113,19 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
         finalPosterURL = await uploadImage(posterFile);
       }
 
+      const newGalleryURLs: string[] = [];
+      for (const file of galleryFiles) {
+        const url = await uploadImage(file);
+        newGalleryURLs.push(url);
+      }
+      const finalGallery = [...galleryPreviews, ...newGalleryURLs].slice(0, 8);
+
       const selectedClub = clubs.find(c => c.id === eventForm.clubId);
       const data = {
         ...eventForm,
         club: selectedClub?.name || eventForm.club,
         posterURL: finalPosterURL,
+        gallery: finalGallery,
         createdBy: user.uid,
         updatedAt: serverTimestamp()
       };
@@ -408,14 +418,14 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           ) : (
             <div className="divide-y divide-stone-100">
               {organisers.map(org => (
-                <div key={org.email} className="flex items-center justify-between px-6 py-4 hover:bg-stone-50 transition-colors">
-                  <div>
-                    <p className="font-semibold text-stone-900 text-sm">{org.email}</p>
-                    <span className="inline-block mt-1 text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded-full font-medium">
+                <div key={org.email} className="flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-stone-50 transition-colors gap-3">
+                  <div className="min-w-0 flex-grow">
+                    <p className="font-semibold text-stone-900 text-sm truncate">{org.email}</p>
+                    <span className="inline-block mt-1 text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded-full font-medium truncate max-w-full">
                       {org.clubName}
                     </span>
                   </div>
-                  <button onClick={() => handleDeleteOrganiser(org.email)} className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Remove access">
+                  <button onClick={() => handleDeleteOrganiser(org.email)} className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all shrink-0" title="Remove access">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -431,7 +441,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-stone-100 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-bold text-stone-900">{editingEvent ? 'Edit Event' : 'Create New Event'}</h3>
-              <button onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); setPosterFile(null); }} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
+              <button onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); setPosterFile(null); setGalleryFiles([]); setGalleryPreviews([]); }} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
                 <X className="h-5 w-5 text-stone-400" />
               </button>
             </div>
@@ -523,10 +533,67 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                     )}
                   </div>
                 </div>
+
+                {/* Gallery upload */}
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-bold text-stone-700 mb-1.5">
+                    Additional Posters / Gallery
+                    <span className="text-stone-400 font-normal ml-1">({Math.min(8, galleryPreviews.length + galleryFiles.length)}/8)</span>
+                  </label>
+
+                  {galleryPreviews.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {galleryPreviews.map((url, i) => (
+                        <div key={i} className="relative h-20 w-14 rounded-lg overflow-hidden border border-stone-200 group/gp">
+                          <img src={url} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                          <button type="button"
+                            onClick={() => setGalleryPreviews(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover/gp:opacity-100 transition-opacity">
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {galleryFiles.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {galleryFiles.map((file, i) => (
+                        <div key={i} className="relative h-20 w-14 rounded-lg overflow-hidden border border-emerald-200 group/gf">
+                          <img src={URL.createObjectURL(file)} alt="" className="h-full w-full object-cover" />
+                          <button type="button"
+                            onClick={() => setGalleryFiles(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover/gf:opacity-100 transition-opacity">
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {(galleryPreviews.length + galleryFiles.length) < 8 && (
+                    <>
+                      <input type="file" accept="image/*" multiple className="hidden" id="admin-gallery-upload"
+                        onChange={e => {
+                          const files = Array.from(e.target.files || []);
+                          const remaining = 8 - galleryPreviews.length - galleryFiles.length;
+                          setGalleryFiles(prev => [...prev, ...files.slice(0, remaining)]);
+                          e.target.value = '';
+                        }} />
+                      <label htmlFor="admin-gallery-upload"
+                        className="flex items-center justify-center w-full border-2 border-dashed border-stone-200 rounded-xl py-4 cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition-all group">
+                        <div className="text-center">
+                          <ImageIcon className="h-6 w-6 text-stone-300 group-hover:text-emerald-500 mx-auto mb-1" />
+                          <p className="text-sm text-stone-400">Click to add images <span className="text-stone-300">(select multiple)</span></p>
+                        </div>
+                      </label>
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className="pt-4 border-t border-stone-100 flex justify-end gap-3">
-                <button type="button" onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); setPosterFile(null); }}
+                <button type="button" onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); setPosterFile(null); setGalleryFiles([]); setGalleryPreviews([]); }}
                   className="px-5 py-2.5 text-stone-500 font-semibold hover:text-stone-900 transition-colors text-sm">
                   Cancel
                 </button>
