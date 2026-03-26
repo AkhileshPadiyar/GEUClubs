@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Layout, LogOut, User as UserIcon, Calendar, Menu, X } from 'lucide-react';
+import { Layout, LogOut, User as UserIcon, Menu, X } from 'lucide-react';
+import { APP_NAME, LOGO_URL } from '../config/brand';
 
 interface NavbarProps {
   user: User | null;
@@ -25,10 +26,23 @@ export default function Navbar({ user }: NavbarProps) {
           {/* Logo + Desktop Links */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-emerald-600 p-1.5 rounded-lg">
-                <Calendar className="h-6 w-6 text-white" />
+              <img
+                src={LOGO_URL}
+                alt={APP_NAME}
+                className="h-9 w-9 rounded-lg object-contain"
+                onError={e => {
+                  // Fallback to emerald square if logo file not found
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+              {/* Fallback shown if logo.png is missing */}
+              <div className="h-9 w-9 bg-emerald-600 rounded-lg items-center justify-center text-white font-bold text-sm hidden">
+                GC
               </div>
-              <span className="text-xl font-bold tracking-tight text-stone-900">GEUClubs</span>
+              <span className="text-xl font-bold tracking-tight text-stone-900">{APP_NAME}</span>
             </Link>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               <Link to="/" className="text-stone-600 hover:text-emerald-600 px-3 py-2 text-sm font-medium transition-colors">Events</Link>
@@ -111,7 +125,7 @@ export default function Navbar({ user }: NavbarProps) {
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center space-x-3 px-3 py-3 rounded-xl text-stone-700 hover:bg-stone-50 hover:text-emerald-600 text-sm font-medium transition-colors"
             >
-              <Calendar className="h-4 w-4" />
+              <Layout className="h-4 w-4" />
               <span>Events</span>
             </Link>
             <Link
