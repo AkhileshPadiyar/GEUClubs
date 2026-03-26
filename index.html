@@ -1,3 +1,5 @@
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -7,14 +9,19 @@
     <meta name="google-site-verification" content="-hxqJ8Bv6nxGvxgfVqFOPGcj6P5BIye1SHxNhuOwBjw" />
 
     <!-- ── Primary SEO ─────────────────────────────────────────── -->
-    <title>GEUClubs — College Events Platform | Graphic Era University</title>
-    <meta name="description" content="GEUClubs is the official college events platform for Graphic Era University. Discover upcoming hackathons, workshops, competitions and club events — all in one place." />
+    <title>GEUClubs — Upcoming Events & Student Clubs | Graphic Era University Dehradun</title>
+    <meta name="description" content="Discover upcoming events at Graphic Era University. GEUClubs lists all GEU student club events — hackathons, workshops, competitions and cultural fests. Never miss a Graphian event again." />
     <meta name="keywords" content="GEUClubs, GEU clubs, Graphic Era University events, college events, GEU hackathon, GEU workshops, student clubs, Dehradun college events" />
-    <meta name="author" content="Graphic Era University Student" />
+    <meta name="author" content="Graphic Era University Student Council" />
     <meta name="robots" content="index, follow" />
-
-    <!-- ── Canonical URL — replace with your actual Vercel domain ── -->
     <link rel="canonical" href="https://geuclubs.vercel.app" />
+
+    <!-- ── Favicons ────────────────────────────────────────────── -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#059669" />
 
     <!-- ── Open Graph (WhatsApp, Facebook link previews) ───────── -->
     <meta property="og:type" content="website" />
@@ -23,6 +30,8 @@
     <meta property="og:description" content="All GEU college club events in one place. Never miss a hackathon, workshop, or competition again." />
     <meta property="og:url" content="https://geuclubs.vercel.app" />
     <meta property="og:image" content="https://geuclubs.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_IN" />
 
     <!-- ── Twitter / X Card ────────────────────────────────────── -->
@@ -30,6 +39,63 @@
     <meta name="twitter:title" content="GEUClubs — College Events Platform" />
     <meta name="twitter:description" content="All GEU college club events in one place. Never miss a hackathon, workshop, or competition again." />
     <meta name="twitter:image" content="https://geuclubs.vercel.app/og-image.png" />
+
+    <!-- ── Schema.org Structured Data ─────────────────────────── -->
+    <!-- This tells Google what your site is and enables sitelinks  -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://geuclubs.vercel.app/#website",
+          "url": "https://geuclubs.vercel.app",
+          "name": "GEUClubs",
+          "description": "Official college events platform for Graphic Era University",
+          "publisher": {
+            "@id": "https://geuclubs.vercel.app/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://geuclubs.vercel.app/?search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://geuclubs.vercel.app/#organization",
+          "name": "GEUClubs",
+          "url": "https://geuclubs.vercel.app",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://geuclubs.vercel.app/apple-touch-icon.png",
+            "width": 180,
+            "height": 180
+          },
+          "description": "GEUClubs is the official college events platform for Graphic Era University.",
+          "sameAs": []
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Events",
+          "url": "https://geuclubs.vercel.app/"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Clubs",
+          "url": "https://geuclubs.vercel.app/clubs"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Club Login",
+          "url": "https://geuclubs.vercel.app/login"
+        }
+      ]
+    }
+    </script>
 
     <!-- ── Fonts ───────────────────────────────────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
